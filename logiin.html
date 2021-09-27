@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+    <html>
+
+    <head>
+        <meta charset="utf-8">
+        <title>Login</title>
+        
+        <link rel="stylesheet" href="logiin.css">
+    </head>
+
+    <body>
+    <div class="overlay" id="ov">
+    <h1> Weatherly App</h1>
+    </div>
+    <div class="background">
+    <div class="container">
+    <div class="bar">
+      <input class="searchbar" type="text" placeholder="Find Your Location">
+      <button onclick="exe()"><img class="voice" id="sb" src="https://img.icons8.com/color/search"></button>
+      </input>
+    </div>
+     <section class="location">
+        <div class="city">Northampton, GB</div>
+        <div class="date">Thursday 10 January 2020</div>
+      </section>
+      <div class="current">
+        <div class="temp">15<span>°c</span></div>
+        <div class="weather">Sunny</div>
+        <div class="hi-low">13°c / 16°c</div>
+      </div>
+    </main>
+    </div>
+</div>
+<script>
+  let spinnerWrapper =document.getElementById("ov");
+
+    window.addEventListener('load', function () {
+        
+        setTimeout(function(){ spinnerWrapper.style.display = 'none';}, 2000);
+        
+    });
+</script> 
+<script>
+   
+const api = {
+  key: "cd3c097765ba92903ec783b6cf5bef86",
+  base: "https://api.openweathermap.org/data/2.5/"
+}
+
+const searchbox = document.querySelector('.searchbar');
+searchbox.addEventListener('keypress', setQuery);
+function exe(){
+  getResults(searchbox.value);
+}
+
+function setQuery(evt) {
+  if (evt.keyCode == 13) {
+    getResults(searchbox.value);
+  }
+}
+
+function getResults (query) {
+  fetch(`${api.base}weather?q=${query}&units=metric&APPID=${api.key}`)
+    .then(weather => {
+      return weather.json();
+    }).then(displayResults);
+}
+
+function displayResults (weather) {
+  let city = document.querySelector('.location .city');
+  city.innerText = `${weather.name}, ${weather.sys.country}`;
+
+  let now = new Date();
+  let date = document.querySelector('.location .date');
+  date.innerText = dateBuilder(now);
+
+  let temp = document.querySelector('.current .temp');
+  temp.innerHTML = `${Math.round(weather.main.temp)}<span>°c</span>`;
+
+  let weather_el = document.querySelector('.current .weather');
+  weather_el.innerText = weather.weather[0].main;
+
+  let hilow = document.querySelector('.hi-low');
+  hilow.innerText = `${Math.round(weather.main.temp_min)}°c / ${Math.round(weather.main.temp_max)}°c`;
+}
+
+function dateBuilder (d) {
+  let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+  let day = days[d.getDay()];
+  let date = d.getDate();
+  let month = months[d.getMonth()];
+  let year = d.getFullYear();
+
+  return `${day} ${date} ${month} ${year}`;
+}
+</script>
+</body>
+
+</html>
